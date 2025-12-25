@@ -18,12 +18,20 @@ public class CertificateService {
     }
 
     public Certificate create(Certificate certificate) {
+        if (certificateRepository.existsByName(certificate.getName())){
+            throw new RuntimeException("Chung chi này đã tồn tại!");
+
+        }
         return certificateRepository.save(certificate);
     }
 
     public Certificate update(Long id, Certificate certificate) {
         Certificate existing = certificateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Certificate not found"));
+                .orElseThrow(() -> new RuntimeException("k tim thay chung chi nay"));
+
+        if(certificateRepository.existsByNameAndIdNot(certificate.getName(),id)){
+            throw new RuntimeException("chung chi đang tồn tại ở bản ghi khac");
+        }
 
         existing.setName(certificate.getName());
         return certificateRepository.save(existing);

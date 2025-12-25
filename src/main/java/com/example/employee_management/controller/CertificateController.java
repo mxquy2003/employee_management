@@ -1,9 +1,9 @@
 package com.example.employee_management.controller;
 
 import com.example.employee_management.entity.Certificate;
-import com.example.employee_management.repository.CertificateRepository;
+import com.example.employee_management.service.CertificateService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,33 +11,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/certificates")
+@RequiredArgsConstructor
 public class CertificateController {
 
-    @Autowired
-    private CertificateRepository certificateRepository;
+    private final CertificateService certificateService;
 
     @GetMapping
     public List<Certificate> getAll() {
-        return certificateRepository.findAll();
+        return certificateService.getAll();
     }
 
     @PostMapping
     public Certificate create(@Valid @RequestBody Certificate certificate) {
-        return certificateRepository.save(certificate);
+        return certificateService.create(certificate);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Certificate> update(@PathVariable Long id, @Valid @RequestBody Certificate details) {
-        return certificateRepository.findById(id)
-                .map(cert -> {
-                    cert.setName(details.getName());
-                    return ResponseEntity.ok(certificateRepository.save(cert));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Certificate> update(@PathVariable Long id, @Valid @RequestBody Certificate certificate) {
+        return ResponseEntity.ok(certificateService.update(id, certificate));
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        certificateRepository.deleteById(id);
+        certificateService.delete(id);
     }
 }
